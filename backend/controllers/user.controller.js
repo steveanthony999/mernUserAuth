@@ -8,20 +8,26 @@ const User = require('../models/user.model');
 // @route   /api/users
 // @access  Public
 const registerUser = asyncHandler(async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, username, password } = req.body;
 
   //   Validation
-  if (!name || !email || !password) {
+  if (!name || !email || !username || !password) {
     res.status(400);
     throw new Error('Please include all fields');
   }
 
   //   Find if user already exists
   const userExists = await User.findOne({ email });
+  const usernameExists = await User.findOne({ username });
 
   if (userExists) {
     res.status(400);
     throw new Error('User already exists');
+  }
+
+  if (usernameExists) {
+    res.status(400);
+    throw new Error('Username is taken');
   }
 
   //   Hash password
@@ -32,6 +38,7 @@ const registerUser = asyncHandler(async (req, res) => {
   const user = await User.create({
     name,
     email,
+    username,
     password: hashedPassword,
   });
 
@@ -40,6 +47,7 @@ const registerUser = asyncHandler(async (req, res) => {
       _id: user._id,
       name: user.name,
       email: user.email,
+      username: user.username,
       token: generateToken(user._id),
     });
   } else {
@@ -61,6 +69,7 @@ const loginUser = asyncHandler(async (req, res) => {
       _id: user._id,
       name: user.name,
       email: user.email,
+      username: user.username,
       token: generateToken(user._id),
     });
   } else {
@@ -77,6 +86,7 @@ const getMe = asyncHandler(async (req, res) => {
     id: req.user._id,
     email: req.user.email,
     name: req.user.name,
+    username: req.user.username,
   };
 
   res.status(200).json(user);
