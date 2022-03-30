@@ -15,14 +15,14 @@ const Header = () => {
   };
 
   return (
-    <div className='header'>
-      <div className='logo'>
+    <div>
+      <div>
         <Link to='/'>Home</Link>
       </div>
       <ul>
         {user ? (
           <li>
-            <button className='btn' onClick={onLogout}>
+            <button onClick={onLogout}>
               <FaSignOutAlt /> Logout
             </button>
           </li>
@@ -41,6 +41,15 @@ const Header = () => {
           </>
         )}
       </ul>
+      {user ? (
+        <>
+          <h1>Hello @{user.username}!</h1>
+          <h2>{user.name}</h2>
+          <h3>{user.email}</h3>
+        </>
+      ) : (
+        <>Please login to see your details</>
+      )}
     </div>
   );
 };
